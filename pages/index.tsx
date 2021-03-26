@@ -5,7 +5,7 @@ type API = { getUser: getUser };
 
 const query = <Endpoint extends keyof API>(
   endpoint: Endpoint,
-  args: Parameters<API[Endpoint]>
+  ...args: Parameters<API[Endpoint]>
 ): ReturnType<API[Endpoint]> => {
   return fetch('http://localhost:3000/api', {
     method: 'POST',
@@ -18,7 +18,7 @@ const IndexPage = () => {
   const [user, setUser] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
-    query('getUser', ['asdf1234']).then(setUser);
+    query('getUser', 'user_12378192874').then(setUser);
   }, []);
 
   if (!user) return <div>Loading...</div>;

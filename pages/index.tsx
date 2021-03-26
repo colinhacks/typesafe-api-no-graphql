@@ -1,15 +1,34 @@
-import Link from 'next/link'
-import Layout from '../components/Layout'
+import { useEffect, useState } from 'react';
+import { getUser } from './api';
 
-const IndexPage = () => (
-  <Layout title="Home | Next.js + TypeScript Example">
-    <h1>Hello Next.js 👋</h1>
-    <p>
-      <Link href="/about">
-        <a>About</a>
-      </Link>
-    </p>
-  </Layout>
-)
+type API = { getUser: getUser };
 
-export default IndexPage
+const query = <Endpoint extends keyof API>(
+  endpoint: Endpoint,
+  args: Parameters<API[Endpoint]>
+): ReturnType<API[Endpoint]> => {
+  return fetch('http://localhost:3000/api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ endpoint, arguments: args }),
+  }).then((response) => response.json()) as any;
+};
+
+const IndexPage = () => {
+  const [user, setUser] = useState<{ id: string; name: string } | null>(null);
+
+  useEffect(() => {
+    query('getUser', ['asdf1234']).then(setUser);
+  }, []);
+
+  if (!user) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <p>ID: {user.id}</p>
+      <p>Name: {user.name}</p>
+    </div>
+  );
+};
+
+export default IndexPage;
